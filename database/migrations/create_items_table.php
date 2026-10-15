@@ -2,12 +2,12 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class exntends Migration
+return new class extends Migration
 {
     public function up(): void
     {
         DB::statement ("
-            CREATE TABLE items (
+            CREATE TABLE IF NOT EXISTS items (
               id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
               name VARCHAR(255) NOT NULL,
               quantity INT NOT NULL DEFAULT 0 CHECK (QUANTITY >=0),
@@ -22,4 +22,4 @@ return new class exntends Migration
     {
         DB::statement("DROP TABLE items");
     }
-}
+};
