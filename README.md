@@ -1,74 +1,65 @@
-# Simple Listing Application
+# Simple Listing
 
-A lightweight inventory and item management web application built with **Laravel**, **PostgreSQL**, and **Tailwind CSS**.
+A simple item management web application built with Laravel, PostgreSQL, and Tailwind CSS.
 
----
+## Overview & Implemented Features
 
-## 📌 Project Overview & Implemented Features
-
-This project provides item listing and tracking capabilities with direct SQL queries and soft-deletion support. Below are the core components and custom implementations:
-
-### 1. Database Schema & Migration
+### 1. Database Migration
 - **File**: [`database/migrations/create_items_table.php`](database/migrations/create_items_table.php)
-- **Description**: Defines the PostgreSQL `items` table schema using raw SQL statements:
-  - `id`: Auto-generated identity primary key (`BIGINT GENERATED ALWAYS AS IDENTITY`).
-  - `name`: Item title / designation (`VARCHAR(255)`).
-  - `quantity`: Item count with non-negative check constraint (`INT CHECK (quantity >= 0)`).
-  - `deleted_at`: Soft delete timestamp (`TIMESTAMP WITH TIME ZONE`).
-  - `created_at` & `updated_at`: Audit timestamps.
+- Defines the `items` table schema with PostgreSQL raw SQL:
+  - `id`: Primary key (`BIGINT GENERATED ALWAYS AS IDENTITY`)
+  - `name`: Item name (`VARCHAR(255)`)
+  - `quantity`: Item count (`INT CHECK (quantity >= 0)`)
+  - `deleted_at`: Soft delete timestamp (`TIMESTAMP WITH TIME ZONE`)
+  - `created_at` & `updated_at`: Timestamps
 
-### 2. Business Logic & Controller
+### 2. Item Controller
 - **File**: [`app/Http/Controllers/ItemController.php`](app/Http/Controllers/ItemController.php)
-- **Description**: Handles CRUD operations and state changes using `Illuminate\Support\Facades\DB`:
-  - `index()`: Retrieves active items (`deleted_at IS NULL`) and trashed items (`deleted_at IS NOT NULL`).
-  - `store()`: Validates request data and inserts new item records.
-  - `updateName()`: Renames an existing active item.
-  - `decrement()`: Decrements item quantity down to a minimum of 0 (`GREATEST(0, quantity - 1)`).
-  - `restore()`: Restores soft-deleted items by resetting `deleted_at = NULL`.
+- Handles item operations using raw SQL queries:
+  - `index()`: Lists active and soft-deleted items
+  - `store()`: Validates input and creates a new item
+  - `updateName()`: Updates an existing item's name
+  - `decrement()`: Decrements item quantity down to a minimum of 0
+  - `restore()`: Restores a soft-deleted item
 
-### 3. User Interface & Views
+### 3. Views
 - **File**: [`resources/views/index.blade.php`](resources/views/index.blade.php)
-- **Description**: Blade view styled with Tailwind CSS providing:
-  - Form to create and add new items (`name` and `quantity`).
-  - Active items list with remaining quantities.
-  - Trashed items overview.
+- Blade template styled with Tailwind CSS for:
+  - Form to add items
+  - List of active items
+  - List of trashed items
 
-### 4. Application Routes
+### 4. Routes
 - **File**: [`routes/web.php`](routes/web.php)
-- **Description**: Routing map for web endpoints:
+- Application endpoints:
 
 | Method | Endpoint | Action | Route Name |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/` | List items and trashed items | `items.index` |
-| `POST` | `/items` | Create new item | `items.store` |
-| `PATCH` | `/items/{id}/update-name` | Rename item | `items.updateName` |
+| `POST` | `/items` | Create item | `items.store` |
+| `PATCH` | `/items/{id}/update-name` | Update item name | `items.updateName` |
 | `PATCH` | `/items/{id}/decrement` | Decrement item quantity | `items.decrement` |
 | `DELETE` | `/items/{id}` | Soft delete item | `items.delete` |
 | `PATCH` | `/items/{id}/restore` | Restore soft-deleted item | `items.restore` |
 
 ### 5. Repository Configuration
 - **File**: [`.gitignore`](.gitignore)
-- **Description**: Configured repository ignore rules protecting sensitive credentials (`.env`, `.env.*.local`), Windows operating system files (`Thumbs.db`, `Desktop.ini`), package caches (`/vendor`, `/node_modules`), and editor settings.
+- Git ignore rules for environment files, Windows OS files, dependencies, and editor configurations.
 
----
+## Tech Stack
 
-## 🛠️ Tech Stack
+- **Backend**: Laravel 11
+- **Database**: PostgreSQL (Supabase)
+- **Frontend**: Blade, Tailwind CSS, React, Vite
 
-- **Backend Framework**: [Laravel 11](https://laravel.com/)
-- **Database**: [PostgreSQL](https://www.postgresql.org/) (hosted on [Supabase](https://supabase.com/))
-- **Frontend / Styling**: [Blade](https://laravel.com/docs/blade) & [Tailwind CSS](https://tailwindcss.com/)
-- **Frontend Assets**: Vite, TypeScript, React
-
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- PHP >= 8.2 with `pdo_pgsql` extension enabled
-- [Composer](https://getcomposer.org/)
-- [Node.js](https://nodejs.org/) & npm
+- PHP >= 8.2 (with `pdo_pgsql`)
+- Composer
+- Node.js & npm
 
-### Installation
+### Setup
 
 1. **Clone the repository**:
    ```bash
@@ -82,12 +73,12 @@ This project provides item listing and tracking capabilities with direct SQL que
    npm install
    ```
 
-3. **Configure Environment**:
+3. **Configure environment**:
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
-   Update your database credentials in `.env`:
+   Set your PostgreSQL database credentials in `.env`:
    ```env
    DB_CONNECTION=pgsql
    DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com
@@ -97,17 +88,16 @@ This project provides item listing and tracking capabilities with direct SQL que
    DB_PASSWORD=your_database_password
    ```
 
-4. **Run Migrations**:
+4. **Run migrations**:
    ```bash
    php artisan migrate
    ```
 
-5. **Start Development Servers**:
+5. **Run application**:
    ```bash
-   # Terminal 1 - Laravel server
+   # Terminal 1
    php artisan serve
 
-   # Terminal 2 - Frontend assets
+   # Terminal 2
    npm run dev
    ```
-   Open [http://localhost:8000](http://localhost:8000) in your browser.
